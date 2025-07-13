@@ -97,7 +97,7 @@ const getGaugeOption = (type, value, label, modal = false) => {
           fontSize: modal ? 48 : 18,
           fontWeight: modal ? '700' : '600',
           color: modal ? '#222' : '#2563eb',
-          offsetCenter: [0, modal ? '60%' : '45%'],
+          offsetCenter: [0, modal ? '95%' : '80%'], // Move value further below the gauge
           formatter: (val) => `${Number(val).toFixed(2)}${unit}`,
           width: modal ? 300 : 90,
           overflow: 'truncate',
@@ -117,12 +117,21 @@ const GaugeChart = ({ type, value, label, onClick, modal = false }) => {
   // Responsive modal sizing
   if (modal) {
     return (
-      <div className="flex items-center justify-center w-full h-full">
+      <div className="flex flex-col items-center justify-center w-full h-full">
         <ReactECharts
           option={getGaugeOption(type, value, label, true)}
           style={{ height: '100%', width: '100%' }}
           opts={{ renderer: 'svg' }}
         />
+        <div className="mt-1 text-base text-gray-700 dark:text-gray-200 font-semibold">{label}</div>
+        <div className="flex gap-2 mt-2">
+          {COLOR_LEGEND.map((item) => (
+            <div key={item.label} className="flex items-center gap-1">
+              <span className="inline-block w-3 h-3 rounded-full" style={{ background: item.color }}></span>
+              <span className="text-[10px] text-gray-500 dark:text-gray-400">{item.label}</span>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
