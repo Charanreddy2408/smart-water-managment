@@ -7,6 +7,9 @@ import RealTimeChart from './RealTimeChart';
 import WaterQualityOverview from './WaterQualityOverview';
 import AlertsPanel from './AlertsPanel';
 import firebaseService from '../services/firebase';
+import GaugeChart from './GaugeChart';
+
+const SENSOR_KEYS = ['tds', 'temperature', 'turbidity', 'ph'];
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -20,6 +23,27 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedSensors, setSelectedSensors] = useState(SENSOR_KEYS);
+  const [expandedGauge, setExpandedGauge] = useState(null);
+
+  // Settings modal state and handlers
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [tempSensors, setTempSensors] = useState(selectedSensors);
+  const handleOpenSettings = () => {
+    setTempSensors(selectedSensors);
+    setIsSettingsOpen(true);
+  };
+  const handleSensorToggle = (sensor) => {
+    setTempSensors((prev) =>
+      prev.includes(sensor)
+        ? prev.filter((s) => s !== sensor)
+        : [...prev, sensor]
+    );
+  };
+  const handleSaveSensors = () => {
+    setIsSettingsOpen(false);
+    setSelectedSensors(tempSensors);
+  };
 
   // Initialize Firebase listener
   useEffect(() => {
@@ -69,7 +93,6 @@ const Dashboard = () => {
   // Prepare metric data
   const metrics = useMemo(() => {
     if (!sensorData) return [];
-    
     return [
       {
         type: 'tds',
@@ -91,8 +114,8 @@ const Dashboard = () => {
         value: sensorData.pH,
         status: getMetricStatus('pH', sensorData.pH)
       }
-    ];
-  }, [sensorData]);
+    ].filter(metric => selectedSensors.includes(metric.type));
+  }, [sensorData, selectedSensors]);
 
   // Calculate overall water quality
   const overallQuality = useMemo(() => {
@@ -139,10 +162,30 @@ const Dashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+          {/* Water Drop Animation */}
+          <svg className="mx-auto mb-4 animate-bounce" width="64" height="64" viewBox="0 0 64 64" fill="none">
+            <defs>
+              <linearGradient id="waterDropGradient2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#3b82f6" />
+                <stop offset="100%" stopColor="#2563eb" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M32 6C32 6 12 30 12 42C12 53.0457 21.9543 62 32 62C42.0457 62 52 53.0457 52 42C52 30 32 6 32 6Z"
+              fill="url(#waterDropGradient2)"
+              stroke="#2563eb"
+              strokeWidth="2"
+            />
+            <ellipse cx="32" cy="48" rx="12" ry="4" fill="#3b82f6" fillOpacity="0.15" />
+            <circle cx="32" cy="40" r="8" fill="#fff" fillOpacity="0.25" />
+          </svg>
+          {/* Animated Water Wave */}
+          <svg className="mx-auto mb-2" width="120" height="24" viewBox="0 0 120 24" fill="none">
+            <path className="animate-pulse-slow" d="M0 12 Q 20 24 40 12 T 80 12 T 120 12 V24 H0Z" fill="#3b82f6" fillOpacity="0.2" />
+          </svg>
+          <p className="mt-4 text-blue-700 dark:text-blue-200 font-semibold animate-pulse">Loading water dashboard...</p>
         </div>
       </div>
     );
@@ -151,30 +194,73 @@ const Dashboard = () => {
   const qualityInfo = getOverallQualityInfo(overallQuality);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header 
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans">
+      <Header
         onRefresh={handleRefresh}
         isRefreshing={isRefreshing}
         lastUpdated={lastUpdated}
+        selectedSensors={selectedSensors}
+        onSensorChange={setSelectedSensors}
+        onOpenSettings={handleOpenSettings}
       />
-      
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+      {/* Settings Modal rendered at top level */}
+      {isSettingsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 w-full max-w-md mx-4 my-8 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100 flex items-center">
+              <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3" /></svg> Customize Dashboard
+            </h2>
+            <div className="space-y-3 mb-6">
+              {SENSOR_KEYS.map((key) => (
+                <label key={key} className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={tempSensors.includes(key)}
+                    onChange={() => handleSensorToggle(key)}
+                    className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <span className="text-gray-800 dark:text-gray-200 font-medium">{t(`metrics.${key}`)}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setIsSettingsOpen(false)}
+                className="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveSensors}
+                className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 font-semibold"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 font-sans">
         {/* Overall Water Quality Status */}
-        <div className={`mb-6 sm:mb-8 rounded-xl border-2 p-4 sm:p-6 ${qualityInfo.bgColor}`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3 sm:space-x-4">
-              {qualityInfo.icon}
-              <div>
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-                  Overall Water Quality: <span className={qualityInfo.color}>{t(`status.${overallQuality}`)}</span>
-                </h2>
-                <p className="text-sm sm:text-base text-gray-600 mt-1">
-                  {qualityInfo.message}
-                </p>
-              </div>
+        <div
+          className={`mb-6 sm:mb-8 rounded-2xl p-5 sm:p-7 shadow-xl backdrop-blur-md bg-white/80 dark:bg-gray-800/80 border-0 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 flex items-center ${qualityInfo.bgColor}`}
+          style={{
+            boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.10)',
+            border: '1.5px solid rgba(255,255,255,0.12)',
+          }}
+        >
+          <div className="flex items-center space-x-4 w-full">
+            <div className="flex-shrink-0">{qualityInfo.icon}</div>
+            <div className="flex-1">
+              <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 mb-1 font-sans">
+                Overall Water Quality: <span className={qualityInfo.color}>{t(`status.${overallQuality}`)}</span>
+              </h2>
+              <p className="text-base sm:text-lg font-medium text-gray-700 dark:text-gray-200 font-sans">
+                {qualityInfo.message}
+              </p>
             </div>
             <div className="hidden sm:block">
-              <Info className="h-5 w-5 text-gray-400" />
+              <Info className="h-5 w-5 text-gray-400 dark:text-gray-300" />
             </div>
           </div>
         </div>
@@ -190,28 +276,89 @@ const Dashboard = () => {
             />
           ))}
         </div>
+        {/* Gauge Charts for all selected metrics */}
+        {sensorData && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {selectedSensors.includes('tds') && (
+              <GaugeChart type="tds" value={sensorData.TDS} label="TDS" onClick={() => setExpandedGauge('tds')} />
+            )}
+            {selectedSensors.includes('temperature') && (
+              <GaugeChart type="temperature" value={sensorData.Temperature} label="Temperature" onClick={() => setExpandedGauge('temperature')} />
+            )}
+            {selectedSensors.includes('turbidity') && (
+              <GaugeChart type="turbidity" value={sensorData.Turbidity} label="Turbidity" onClick={() => setExpandedGauge('turbidity')} />
+            )}
+            {selectedSensors.includes('ph') && (
+              <GaugeChart type="ph" value={sensorData.pH} label="pH Level" onClick={() => setExpandedGauge('ph')} />
+            )}
+          </div>
+        )}
+        {/* Gauge Modal */}
+        {expandedGauge && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setExpandedGauge(null)}>
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 w-[90vw] max-w-2xl h-[70vh] flex flex-col items-center justify-center relative" onClick={e => e.stopPropagation()}>
+              <button className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl" onClick={() => setExpandedGauge(null)}>&times;</button>
+              <GaugeChart
+                type={expandedGauge}
+                value={
+                  expandedGauge === 'tds' ? sensorData.TDS :
+                  expandedGauge === 'temperature' ? sensorData.Temperature :
+                  expandedGauge === 'turbidity' ? sensorData.Turbidity :
+                  expandedGauge === 'ph' ? sensorData.pH : 0
+                }
+                label={
+                  expandedGauge === 'tds' ? 'TDS' :
+                  expandedGauge === 'temperature' ? 'Temperature' :
+                  expandedGauge === 'turbidity' ? 'Turbidity' :
+                  expandedGauge === 'ph' ? 'pH Level' : ''
+                }
+                modal={true}
+              />
+              <div className="mt-4 text-xs text-gray-500 dark:text-gray-400 text-center w-full">Click outside or &times; to close</div>
+            </div>
+          </div>
+        )}
 
         {/* Water Quality Standards Reference */}
-        <div className="mb-6 sm:mb-8 bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
-          <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
+        <div className="mb-6 sm:mb-8 bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 sm:p-8 font-sans">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 tracking-tight font-sans">
             Water Quality Standards Reference
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { type: 'tds', ranges: ['< 300 ppm', '300-600 ppm', '600-900 ppm', '> 900 ppm'] },
-              { type: 'temperature', ranges: ['20-25°C', '15-30°C', '10-15°C or 30-35°C', '< 10°C or > 35°C'] },
-              { type: 'turbidity', ranges: ['< 1 NTU', '1-4 NTU', '4-10 NTU', '> 10 NTU'] },
-              { type: 'ph', ranges: ['6.5-8.5', '6.0-9.0', '5.5-6.0 or 9.0-9.5', '< 5.5 or > 9.5'] }
+              { type: 'tds', label: 'Total Dissolved Solids', ranges: ['< 300 ppm', '300-600 ppm', '600-900 ppm', '> 900 ppm'] },
+              { type: 'temperature', label: 'Temperature', ranges: ['20-25°C', '15-30°C', '10-15°C or 30-35°C', '< 10°C or > 35°C'] },
+              { type: 'turbidity', label: 'Turbidity', ranges: ['< 1 NTU', '1-4 NTU', '4-10 NTU', '> 10 NTU'] },
+              { type: 'ph', label: 'pH Level', ranges: ['6.5-8.5', '6.0-9.0', '5.5-6.0 or 9.0-9.5', '< 5.5 or > 9.5'] }
             ].map((param) => (
-              <div key={param.type} className="space-y-2">
-                <h4 className="font-semibold text-gray-900">{t(`metrics.${param.type}`)}</h4>
-                <div className="space-y-1">
+              <div key={param.type} className="space-y-3">
+                <h4 className="font-semibold text-gray-800 dark:text-gray-100 text-base mb-2 font-sans">{param.label}</h4>
+                <div className="space-y-2">
                   {param.ranges.map((range, index) => {
-                    const colors = ['text-green-600', 'text-blue-600', 'text-yellow-600', 'text-red-600'];
-                    const bgColors = ['bg-green-100', 'bg-blue-100', 'bg-yellow-100', 'bg-red-100'];
+                    const colors = [
+                      'text-green-700 dark:text-green-200',
+                      'text-blue-700 dark:text-blue-200',
+                      'text-yellow-700 dark:text-yellow-200',
+                      'text-red-700 dark:text-red-200'
+                    ];
+                    const bgColors = [
+                      'bg-green-100 dark:bg-green-800/60',
+                      'bg-blue-100 dark:bg-blue-800/60',
+                      'bg-yellow-100 dark:bg-yellow-800/60',
+                      'bg-red-100 dark:bg-red-800/60'
+                    ];
+                    const borderColors = [
+                      'border-green-200 dark:border-green-600',
+                      'border-blue-200 dark:border-blue-600',
+                      'border-yellow-200 dark:border-yellow-600',
+                      'border-red-200 dark:border-red-600'
+                    ];
                     const statuses = ['excellent', 'good', 'warning', 'danger'];
                     return (
-                      <div key={index} className={`text-xs sm:text-sm px-2 py-1 rounded ${bgColors[index]} ${colors[index]}`}>
+                      <div
+                        key={index}
+                        className={`text-xs sm:text-sm px-3 py-2 rounded-lg font-medium shadow-sm border ${bgColors[index]} ${colors[index]} ${borderColors[index]} transition-colors`}
+                      >
                         {t(`status.${statuses[index]}`)}: {range}
                       </div>
                     );
@@ -221,54 +368,59 @@ const Dashboard = () => {
             ))}
           </div>
         </div>
-
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          {/* Water Quality Overview */}
-          <div className="xl:col-span-1">
-            <WaterQualityOverview data={sensorData} />
-          </div>
-
-          {/* Alerts Panel */}
+          {/* Water Quality Overview (show if any sensor is selected) */}
+          {selectedSensors.length > 0 && (
+            <div className="xl:col-span-1">
+              <WaterQualityOverview data={sensorData} />
+            </div>
+          )}
+          {/* Alerts Panel (always show) */}
           <div className="xl:col-span-1">
             <AlertsPanel data={sensorData} />
           </div>
-
           {/* Real-time Temperature Chart */}
-          <div className="xl:col-span-1">
-            <RealTimeChart
-              data={historicalData.temperature}
-              type="temperature"
-              title={t('charts.temperatureTrends')}
-            />
-          </div>
+          {selectedSensors.includes('temperature') && (
+            <div className="xl:col-span-1">
+              <RealTimeChart
+                data={historicalData.temperature}
+                type="temperature"
+                title={t('charts.temperatureTrends')}
+              />
+            </div>
+          )}
         </div>
-
         {/* Bottom Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
-          <RealTimeChart
-            data={historicalData.tds}
-            type="tds"
-            title={t('charts.realTimeData') + ' - TDS'}
-          />
-          <RealTimeChart
-            data={historicalData.turbidity}
-            type="turbidity"
-            title={t('charts.turbidityAnalysis')}
-          />
+          {selectedSensors.includes('tds') && (
+            <RealTimeChart
+              data={historicalData.tds}
+              type="tds"
+              title={t('charts.realTimeData') + ' - TDS'}
+            />
+          )}
+          {selectedSensors.includes('turbidity') && (
+            <RealTimeChart
+              data={historicalData.turbidity}
+              type="turbidity"
+              title={t('charts.turbidityAnalysis')}
+            />
+          )}
         </div>
-
         {/* pH Chart */}
-        <div className="mb-6">
-          <RealTimeChart
-            data={historicalData.ph}
-            type="ph"
-            title={t('charts.phLevels')}
-          />
-        </div>
+        {selectedSensors.includes('ph') && (
+          <div className="mb-6">
+            <RealTimeChart
+              data={historicalData.ph}
+              type="ph"
+              title={t('charts.phLevels')}
+            />
+          </div>
+        )}
       </main>
     </div>
   );
 };
 
-export default Dashboard; 
+export default Dashboard;
