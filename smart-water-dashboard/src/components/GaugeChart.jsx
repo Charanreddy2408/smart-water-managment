@@ -117,12 +117,14 @@ const GaugeChart = ({ type, value, label, onClick, modal = false }) => {
   // Responsive modal sizing
   if (modal) {
     return (
-      <div className="flex flex-col items-center justify-center w-full h-full">
-        <ReactECharts
-          option={getGaugeOption(type, value, label, true)}
-          style={{ height: '100%', width: '100%' }}
-          opts={{ renderer: 'svg' }}
-        />
+      <div className="flex flex-col items-center justify-center w-full">
+        <div className="w-full flex items-center justify-center">
+          <ReactECharts
+            option={getGaugeOption(type, value, label, true)}
+            style={{ height: window.innerWidth < 640 ? '220px' : '340px', width: '100%' }}
+            opts={{ renderer: 'svg' }}
+          />
+        </div>
         <div className="mt-1 text-base text-gray-700 dark:text-gray-200 font-semibold">{label}</div>
         <div className="flex gap-2 mt-2">
           {COLOR_LEGEND.map((item) => (

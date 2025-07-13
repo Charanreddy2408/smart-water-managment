@@ -328,11 +328,11 @@ const Dashboard = () => {
           {geminiError && <div className="mt-3 text-red-600 font-medium">{geminiError}</div>}
           {geminiReport && isGeminiModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 animate-fade-in" onClick={() => setIsGeminiModalOpen(false)}>
-              <div className="bg-gradient-to-br from-white via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 rounded-3xl shadow-2xl border border-blue-200 dark:border-blue-800 w-[50vw] max-h-[80vh] flex flex-col items-center justify-center relative overflow-y-auto p-0 transition-all duration-300" onClick={e => e.stopPropagation()}>
-                <button className="absolute top-4 right-4 text-gray-400 hover:text-blue-700 dark:hover:text-blue-300 text-3xl font-bold rounded-full bg-white/70 dark:bg-gray-800/70 p-2 shadow-md transition-all duration-200" onClick={() => setIsGeminiModalOpen(false)}>&times;</button>
-                <div className="w-full px-8 py-10 flex flex-col items-center overflow-y-auto">
-                  <h2 className="text-2xl sm:text-3xl font-extrabold mb-4 text-blue-700 dark:text-blue-300 tracking-tight font-sans text-center">Gemini Water Quality Report</h2>
-                  <div className="whitespace-pre-line text-base sm:text-lg text-gray-900 dark:text-gray-100 leading-relaxed max-w-2xl mx-auto text-center font-sans">
+              <div className="relative bg-gradient-to-br from-white via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 rounded-xl sm:rounded-3xl shadow-2xl border border-blue-200 dark:border-blue-800 w-[99vw] max-w-[99vw] sm:w-[90vw] sm:max-w-3xl max-h-[95vh] sm:max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                <button className="absolute top-2 right-2 sm:top-4 sm:right-4 text-gray-400 hover:text-blue-700 dark:hover:text-blue-300 text-2xl sm:text-3xl font-bold rounded-full bg-white/70 dark:bg-gray-800/70 p-1.5 sm:p-2 shadow-md transition-all duration-200 z-10" onClick={() => setIsGeminiModalOpen(false)}>&times;</button>
+                <div className="overflow-y-auto px-4 py-6 sm:px-10 sm:py-12 w-full max-h-[80vh] sm:max-h-[75vh] flex flex-col items-center">
+                  <h2 className="text-lg sm:text-2xl font-extrabold mb-4 text-blue-700 dark:text-blue-300 tracking-tight font-sans text-center">Gemini Water Quality Report</h2>
+                  <div className="whitespace-pre-line text-sm sm:text-lg text-gray-900 dark:text-gray-100 leading-relaxed max-w-full sm:max-w-2xl mx-auto text-center font-sans">
                     {summarizeGeminiReport(geminiReport)}
                   </div>
                 </div>
@@ -360,9 +360,9 @@ const Dashboard = () => {
         {/* Gauge Modal */}
         {expandedGauge && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 animate-fade-in" onClick={() => setExpandedGauge(null)}>
-            <div className="bg-gradient-to-br from-white via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 rounded-3xl shadow-2xl border border-blue-200 dark:border-blue-800 w-[90vw] max-w-xl max-h-[80vh] md:w-[40vw] md:max-w-2xl md:max-h-[80vh] flex flex-col items-center justify-center relative p-0 transition-all duration-300" onClick={e => e.stopPropagation()}>
-              <button className="absolute top-4 right-4 text-gray-400 hover:text-blue-700 dark:hover:text-blue-300 text-3xl font-bold rounded-full bg-white/70 dark:bg-gray-800/70 p-2 shadow-md transition-all duration-200 z-10" onClick={() => setExpandedGauge(null)}>&times;</button>
-              <div className="flex flex-col items-center justify-center w-full h-full px-4 py-6 sm:px-8 sm:py-10 overflow-y-auto">
+            <div className="relative bg-gradient-to-br from-white via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 rounded-xl sm:rounded-3xl shadow-2xl border border-blue-200 dark:border-blue-800 w-[99vw] max-w-[99vw] sm:w-[90vw] sm:max-w-3xl max-h-[95vh] sm:max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+              <button className="absolute top-2 right-2 sm:top-4 sm:right-4 text-gray-400 hover:text-blue-700 dark:hover:text-blue-300 text-2xl sm:text-3xl font-bold rounded-full bg-white/70 dark:bg-gray-800/70 p-1.5 sm:p-2 shadow-md transition-all duration-200 z-10" onClick={() => setExpandedGauge(null)}>&times;</button>
+              <div className="overflow-y-auto px-4 py-6 sm:px-10 sm:py-12 w-full max-h-[80vh] sm:max-h-[75vh] flex flex-col items-center">
                 <div className="flex-1 flex items-center justify-center w-full">
                   <GaugeChart
                     type={expandedGauge}
