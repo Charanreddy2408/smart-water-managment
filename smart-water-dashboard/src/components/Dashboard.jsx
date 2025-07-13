@@ -8,6 +8,7 @@ import WaterQualityOverview from './WaterQualityOverview';
 import AlertsPanel from './AlertsPanel';
 import firebaseService from '../services/firebase';
 import GaugeChart from './GaugeChart';
+import { getGeminiWaterReport } from '../services/gemini';
 
 const SENSOR_KEYS = ['tds', 'temperature', 'turbidity', 'ph'];
 
@@ -25,6 +26,10 @@ const Dashboard = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedSensors, setSelectedSensors] = useState(SENSOR_KEYS);
   const [expandedGauge, setExpandedGauge] = useState(null);
+  // Gemini report state
+  const [geminiReport, setGeminiReport] = useState('');
+  const [isGeminiLoading, setIsGeminiLoading] = useState(false);
+  const [geminiError, setGeminiError] = useState('');
 
   // Settings modal state and handlers
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -160,6 +165,37 @@ const Dashboard = () => {
     return info[status] || info.excellent;
   };
 
+  // Remove handleGeminiReport and button, use effect instead
+  // Add back the manual handler
+  const handleGeminiReport = async () => {
+    if (!sensorData) return;
+    setIsGeminiLoading(true);
+    setGeminiError('');
+    setGeminiReport('');
+    try {
+      const report = await getGeminiWaterReport({
+        TDS: sensorData.TDS,
+        Temperature: sensorData.Temperature,
+        Turbidity: sensorData.Turbidity,
+        pH: sensorData.pH
+      });
+      setGeminiReport(report);
+    } catch (e) {
+      setGeminiError('Could not fetch Gemini report.');
+    } finally {
+      setIsGeminiLoading(false);
+    }
+  };
+
+  // Utility to summarize and clean up Gemini report
+  function summarizeGeminiReport(report) {
+    // Remove markdown stars and extra whitespace
+    let text = report.replace(/\*\*|\*/g, '').trim();
+    // Optionally, keep only the main points (first 1-2 sentences per section)
+    // For now, just remove markdown and return
+    return text;
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
@@ -276,6 +312,23 @@ const Dashboard = () => {
             />
           ))}
         </div>
+        {/* Gemini Water Quality Report */}
+        <div className="mb-8 flex flex-col items-center">
+          <button
+            onClick={handleGeminiReport}
+            className="px-5 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold shadow hover:from-blue-600 hover:to-blue-800 transition disabled:opacity-60"
+            disabled={isGeminiLoading || !sensorData}
+          >
+            {isGeminiLoading ? 'Generating Report...' : 'Get AI Water Quality Report'}
+          </button>
+          {geminiError && <div className="mt-3 text-red-600 font-medium">{geminiError}</div>}
+          {geminiReport && (
+            <div className="mt-5 w-full max-w-2xl bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-blue-200 dark:border-blue-700 text-gray-900 dark:text-gray-100 whitespace-pre-line text-base leading-relaxed">
+              <h3 className="font-bold text-lg mb-2 text-blue-700 dark:text-blue-300">Gemini Water Quality Report</h3>
+              {summarizeGeminiReport(geminiReport)}
+            </div>
+          )}
+        </div>
         {/* Gauge Charts for all selected metrics */}
         {sensorData && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -296,24 +349,26 @@ const Dashboard = () => {
         {/* Gauge Modal */}
         {expandedGauge && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setExpandedGauge(null)}>
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 w-[90vw] max-w-2xl h-[70vh] flex flex-col items-center justify-center relative" onClick={e => e.stopPropagation()}>
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-[90vw] max-w-2xl h-[70vh] flex items-center justify-center relative p-0" onClick={e => e.stopPropagation()}>
               <button className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl" onClick={() => setExpandedGauge(null)}>&times;</button>
-              <GaugeChart
-                type={expandedGauge}
-                value={
-                  expandedGauge === 'tds' ? sensorData.TDS :
-                  expandedGauge === 'temperature' ? sensorData.Temperature :
-                  expandedGauge === 'turbidity' ? sensorData.Turbidity :
-                  expandedGauge === 'ph' ? sensorData.pH : 0
-                }
-                label={
-                  expandedGauge === 'tds' ? 'TDS' :
-                  expandedGauge === 'temperature' ? 'Temperature' :
-                  expandedGauge === 'turbidity' ? 'Turbidity' :
-                  expandedGauge === 'ph' ? 'pH Level' : ''
-                }
-                modal={true}
-              />
+              <div className="w-full h-full flex items-center justify-center">
+                <GaugeChart
+                  type={expandedGauge}
+                  value={
+                    expandedGauge === 'tds' ? sensorData.TDS :
+                    expandedGauge === 'temperature' ? sensorData.Temperature :
+                    expandedGauge === 'turbidity' ? sensorData.Turbidity :
+                    expandedGauge === 'ph' ? sensorData.pH : 0
+                  }
+                  label={
+                    expandedGauge === 'tds' ? 'TDS' :
+                    expandedGauge === 'temperature' ? 'Temperature' :
+                    expandedGauge === 'turbidity' ? 'Turbidity' :
+                    expandedGauge === 'ph' ? 'pH Level' : ''
+                  }
+                  modal={true}
+                />
+              </div>
               <div className="mt-4 text-xs text-gray-500 dark:text-gray-400 text-center w-full">Click outside or &times; to close</div>
             </div>
           </div>
