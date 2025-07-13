@@ -1,0 +1,82 @@
+{
+  "dashboard": {
+    "title": "స్మార్ట్ వాటర్ మేనేజ్మెంట్ డాష్‌బోర్డ్",
+    "subtitle": "రియల్-టైమ్ IoT నీటి నాణ్యత పర్యవేక్షణ",
+    "lastUpdated": "చివరిసారి అప్‌డేట్",
+    "refresh": "రిఫ్రెష్",
+    "language": "భాష",
+    "settings": "సెట్టింగులు"
+  },
+  "metrics": {
+    "tds": "మొత్తం కరిగిన ఘనపదార్థాలు",
+    "temperature": "ఉష్ణోగ్రత",
+    "turbidity": "టర్బిడిటీ",
+    "ph": "pH స్థాయి",
+    "units": {
+      "tds": "ppm",
+      "temperature": "°C",
+      "turbidity": "NTU",
+      "ph": ""
+    }
+  },
+  "status": {
+    "excellent": "అద్భుతమైన",
+    "good": "మంచి",
+    "warning": "హెచ్చరిక",
+    "danger": "ప్రమాదం",
+    "offline": "ఆఫ్‌లైన్",
+    "online": "ఆన్‌లైన్"
+  },
+  "charts": {
+    "realTimeData": "రియల్-టైమ్ డేటా",
+    "historicalTrends": "చారిత్రక ట్రెండ్స్",
+    "waterQualityOverview": "నీటి నాణ్యత అవలోకనం",
+    "temperatureTrends": "ఉష్ణోగ్రత ట్రెండ్స్",
+    "phLevels": "pH స్థాయిలు",
+    "turbidityAnalysis": "టర్బిడిటీ విశ్లేషణ"
+  },
+  "alerts": {
+    "title": "సిస్టమ్ అలర్టులు",
+    "noAlerts": "క్రియాశీల అలర్టులు లేవు",
+    "highTds": "అధిక TDS స్థాయిలు గుర్తించబడ్డాయి",
+    "lowPh": "తక్కువ pH స్థాయిలు గుర్తించబడ్డాయి",
+    "highTurbidity": "అధిక టర్బిడిటీ గుర్తించబడింది",
+    "temperatureAlert": "ఉష్ణోగ్రత సాధారణ పరిధి వెలుపల"
+  },
+  "ranges": {
+    "tds": {
+      "excellent": "< 300 ppm",
+      "good": "300-600 ppm",
+      "warning": "600-900 ppm",
+      "danger": "> 900 ppm"
+    },
+    "ph": {
+      "excellent": "6.5-8.5",
+      "good": "6.0-9.0",
+      "warning": "5.5-6.0 లేదా 9.0-9.5",
+      "danger": "< 5.5 లేదా > 9.5"
+    },
+    "turbidity": {
+      "excellent": "< 1 NTU",
+      "good": "1-4 NTU",
+      "warning": "4-10 NTU",
+      "danger": "> 10 NTU"
+    },
+    "temperature": {
+      "excellent": "20-25°C",
+      "good": "15-30°C",
+      "warning": "10-15°C లేదా 30-35°C",
+      "danger": "< 10°C లేదా > 35°C"
+    }
+  },
+  "time": {
+    "now": "ఇప్పుడు",
+    "minute": "నిమిషం",
+    "minutes": "నిమిషాలు",
+    "hour": "గంట",
+    "hours": "గంటలు",
+    "day": "రోజు",
+    "days": "రోజులు",
+    "ago": "క్రితం"
+  }
+} 

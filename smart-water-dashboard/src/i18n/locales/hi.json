@@ -1,0 +1,82 @@
+{
+  "dashboard": {
+    "title": "स्मार्ट जल प्रबंधन डैशबोर्ड",
+    "subtitle": "रियल-टाइम IoT जल गुणवत्ता निगरानी",
+    "lastUpdated": "अंतिम अपडेट",
+    "refresh": "रीफ्रेश",
+    "language": "भाषा",
+    "settings": "सेटिंग्स"
+  },
+  "metrics": {
+    "tds": "कुल घुले हुए ठोस पदार्थ",
+    "temperature": "तापमान",
+    "turbidity": "मैलापन",
+    "ph": "pH स्तर",
+    "units": {
+      "tds": "ppm",
+      "temperature": "°C",
+      "turbidity": "NTU",
+      "ph": ""
+    }
+  },
+  "status": {
+    "excellent": "उत्कृष्ट",
+    "good": "अच्छा",
+    "warning": "चेतावनी",
+    "danger": "खतरा",
+    "offline": "ऑफलाइन",
+    "online": "ऑनलाइन"
+  },
+  "charts": {
+    "realTimeData": "रियल-टाइम डेटा",
+    "historicalTrends": "ऐतिहासिक रुझान",
+    "waterQualityOverview": "जल गुणवत्ता अवलोकन",
+    "temperatureTrends": "तापमान रुझान",
+    "phLevels": "pH स्तर",
+    "turbidityAnalysis": "मैलापन विश्लेषण"
+  },
+  "alerts": {
+    "title": "सिस्टम अलर्ट",
+    "noAlerts": "कोई सक्रिय अलर्ट नहीं",
+    "highTds": "उच्च TDS स्तर का पता चला",
+    "lowPh": "निम्न pH स्तर का पता चला",
+    "highTurbidity": "उच्च मैलापन का पता चला",
+    "temperatureAlert": "तापमान सामान्य सीमा से बाहर"
+  },
+  "ranges": {
+    "tds": {
+      "excellent": "< 300 ppm",
+      "good": "300-600 ppm",
+      "warning": "600-900 ppm",
+      "danger": "> 900 ppm"
+    },
+    "ph": {
+      "excellent": "6.5-8.5",
+      "good": "6.0-9.0",
+      "warning": "5.5-6.0 या 9.0-9.5",
+      "danger": "< 5.5 या > 9.5"
+    },
+    "turbidity": {
+      "excellent": "< 1 NTU",
+      "good": "1-4 NTU",
+      "warning": "4-10 NTU",
+      "danger": "> 10 NTU"
+    },
+    "temperature": {
+      "excellent": "20-25°C",
+      "good": "15-30°C",
+      "warning": "10-15°C या 30-35°C",
+      "danger": "< 10°C या > 35°C"
+    }
+  },
+  "time": {
+    "now": "अभी",
+    "minute": "मिनट",
+    "minutes": "मिनट",
+    "hour": "घंटा",
+    "hours": "घंटे",
+    "day": "दिन",
+    "days": "दिन",
+    "ago": "पहले"
+  }
+} 

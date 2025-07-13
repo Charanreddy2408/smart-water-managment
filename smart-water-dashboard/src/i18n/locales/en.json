@@ -1,0 +1,82 @@
+{
+  "dashboard": {
+    "title": "Smart Water Management Dashboard",
+    "subtitle": "Real-time IoT Water Quality Monitoring",
+    "lastUpdated": "Last Updated",
+    "refresh": "Refresh",
+    "language": "Language",
+    "settings": "Settings"
+  },
+  "metrics": {
+    "tds": "Total Dissolved Solids",
+    "temperature": "Temperature",
+    "turbidity": "Turbidity",
+    "ph": "pH Level",
+    "units": {
+      "tds": "ppm",
+      "temperature": "°C",
+      "turbidity": "NTU",
+      "ph": ""
+    }
+  },
+  "status": {
+    "excellent": "Excellent",
+    "good": "Good",
+    "warning": "Warning",
+    "danger": "Danger",
+    "offline": "Offline",
+    "online": "Online"
+  },
+  "charts": {
+    "realTimeData": "Real-time Data",
+    "historicalTrends": "Historical Trends",
+    "waterQualityOverview": "Water Quality Overview",
+    "temperatureTrends": "Temperature Trends",
+    "phLevels": "pH Levels",
+    "turbidityAnalysis": "Turbidity Analysis"
+  },
+  "alerts": {
+    "title": "System Alerts",
+    "noAlerts": "No active alerts",
+    "highTds": "High TDS levels detected",
+    "lowPh": "Low pH levels detected",
+    "highTurbidity": "High turbidity detected",
+    "temperatureAlert": "Temperature outside normal range"
+  },
+  "ranges": {
+    "tds": {
+      "excellent": "< 300 ppm",
+      "good": "300-600 ppm",
+      "warning": "600-900 ppm",
+      "danger": "> 900 ppm"
+    },
+    "ph": {
+      "excellent": "6.5-8.5",
+      "good": "6.0-9.0",
+      "warning": "5.5-6.0 or 9.0-9.5",
+      "danger": "< 5.5 or > 9.5"
+    },
+    "turbidity": {
+      "excellent": "< 1 NTU",
+      "good": "1-4 NTU",
+      "warning": "4-10 NTU",
+      "danger": "> 10 NTU"
+    },
+    "temperature": {
+      "excellent": "20-25°C",
+      "good": "15-30°C",
+      "warning": "10-15°C or 30-35°C",
+      "danger": "< 10°C or > 35°C"
+    }
+  },
+  "time": {
+    "now": "Now",
+    "minute": "minute",
+    "minutes": "minutes",
+    "hour": "hour",
+    "hours": "hours",
+    "day": "day",
+    "days": "days",
+    "ago": "ago"
+  }
+} 
